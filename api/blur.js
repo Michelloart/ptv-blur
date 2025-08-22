@@ -1,6 +1,6 @@
 import sharp from "sharp";
 
-// pomocná funkcia na pixeláciu
+// pomocná funkcia na „mozaiku“ (pixelate)
 async function pixelate(buffer, block = 20) {
   const img = sharp(buffer);
   const { width, height } = await img.metadata();
@@ -17,7 +17,7 @@ export default async function handler(req, res) {
   try {
     const { url, type = "blur", sigma = "20", block = "20", key } = req.query;
 
-    // jednoduchá ochrana: API kľúč
+    // jednoduchá ochrana: API kľúč (pridaj ho vo Vercel → Settings → Environment Variables)
     if (process.env.API_KEY && key !== process.env.API_KEY) {
       return res.status(401).json({ error: "Unauthorized" });
     }
@@ -26,7 +26,7 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "Missing or invalid url" });
     }
 
-    // stiahni originál
+    // stiahni originálny obrázok
     const rsp = await fetch(url);
     if (!rsp.ok) return res.status(400).json({ error: "Fetch failed" });
     const buf = Buffer.from(await rsp.arrayBuffer());
